@@ -30,23 +30,23 @@ void assertStringEquals(const char* expected, const char* result) {
 
 
 void base64_encodeNoPadding() {
-    const char* result = encode("thi"); 
-    const char* expected = "dGhp";
+    const char* result = encode("abc"); 
+    const char* expected = "YWJj";
 
     assertStringEquals(expected, result);
 }
 
 
 void base64_moreBytes() {
-    const char* expected = "dGhpc2lz";
-    const char* result = encode("thisis");
+    const char* result = encode("abcdef");
+    const char* expected = "YWJjZGVm";
     assertStringEquals(expected, result);
 }
 
 
 void base64_onePaddingByte() {
-    const char* expected = "dGhpc2k=";
-    const char* result = encode("thisi");
+    const char* result = encode("abcde");
+    const char* expected = "YWJjZGU=";
     assertStringEquals(expected, result);
 }
 
