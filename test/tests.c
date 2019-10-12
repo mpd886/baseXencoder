@@ -2,35 +2,73 @@
 #include <assert.h>
 #include "baseX.h"
 
+typedef void (*test_func)();
+
+#define TEST(x) { #x, x }
+typedef struct {
+    const char* name;
+    test_func test;
+} Test;    
+
+
+typedef struct {
+    int passed;
+    int failed;
+} Results;
+
+
+static Results test_results = {0, 0};
+
+void assertStringEquals(const char* expected, const char* result) {
+    if (strcmp(expected, result) != 0) {
+        printf("FAIL. Expected value %s does not match %s\n", expected, result);
+        ++test_results.failed;
+    } else {
+        ++test_results.passed;
+    }
+}
+
+
 void base64_encodeNoPadding() {
     const char* result = encode("thi"); 
     const char* expected = "dGhp";
 
-    assert(strcmp(result, expected) == 0);
+    assertStringEquals(expected, result);
 }
+
 
 void base64_moreBytes() {
     const char* expected = "dGhpc2lz";
     const char* result = encode("thisis");
-    assert(strcmp(result, expected) == 0);
+    assertStringEquals(expected, result);
 }
 
 
-typedef void (*test_func)();
+void base64_onePaddingByte() {
+    const char* expected = "dGhpc2k=";
+    const char* result = encode("thisi");
+    assertStringEquals(expected, result);
+}
+
 
 int main() {
     int i;
-    test_func tests[] = {
-        base64_encodeNoPadding,
-        base64_moreBytes
+    Test tests[] = {
+        TEST(base64_encodeNoPadding),
+        TEST(base64_moreBytes),
+        TEST(base64_onePaddingByte)
     };
 
     const int total_tests = sizeof(tests)/sizeof(tests[0]);
 
     for (i = 0 ; i <  total_tests ; ++i)  {
-        tests[i]();
+        printf("Testing %s...", tests[i].name);
+        tests[i].test();
+        printf("\n");
     }
 
-    printf("%d tests passed\n", total_tests);
+    printf("\n%d tests passed\n%d tests failed\n", 
+           test_results.passed, 
+           test_results.failed);
 }
 
