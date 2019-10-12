@@ -70,5 +70,7 @@ int main() {
     printf("\n%d tests passed\n%d tests failed\n", 
            test_results.passed, 
            test_results.failed);
+
+    return 0;
 }
 

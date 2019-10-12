@@ -4,6 +4,7 @@ VPATH=../src
 
 tests: tests.o baseX.o
 	$(CC) -g -o $@ $^
+	-./tests
 
 tests.o: tests.c baseX.h
 	$(CC) -g -c $< -o $@ -I$(INCLUDE_DIRS)
