@@ -30,23 +30,29 @@ void assertStringEquals(const char* expected, const char* result) {
 
 
 void base64_encodeNoPadding() {
-    const char* result = encode("abc"); 
     const char* expected = "YWJj";
-
+    const char* result = encode("abc"); 
     assertStringEquals(expected, result);
 }
 
 
 void base64_moreBytes() {
-    const char* result = encode("abcdef");
     const char* expected = "YWJjZGVm";
+    const char* result = encode("abcdef");
     assertStringEquals(expected, result);
 }
 
 
 void base64_onePaddingByte() {
-    const char* result = encode("abcde");
     const char* expected = "YWJjZGU=";
+    const char* result = encode("abcde");
+    assertStringEquals(expected, result);
+}
+
+
+void base64_twoPaddingByte() {
+    const char* expected = "YWJjZA==";
+    const char* result = encode("abcd");
     assertStringEquals(expected, result);
 }
 
@@ -56,7 +62,8 @@ int main() {
     Test tests[] = {
         TEST(base64_encodeNoPadding),
         TEST(base64_moreBytes),
-        TEST(base64_onePaddingByte)
+        TEST(base64_onePaddingByte),
+        TEST(base64_twoPaddingByte)
     };
 
     const int total_tests = sizeof(tests)/sizeof(tests[0]);

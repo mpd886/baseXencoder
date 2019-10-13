@@ -3,47 +3,60 @@
 #include "baseX.h"
 
 
-static const char* _make_base64_alphabet() {
-    char *alpha = (char*)calloc(64, 1);
+static const char base64_alphabet[] = { 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 
+                                        'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 
+                                        'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 
+                                        'Y', 'Z', 'a', 'b', 'c', 'd', 'e', 'f', 
+                                        'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 
+                                        'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 
+                                        'w', 'x', 'y', 'z', '0', '1', '2', '3', 
+                                        '4', '5', '6', '7', '8', '9', '+', '/' };
+                                        
+
+/*
+ *  dest has 4 bytes for encoding
+ *  src will have between 1 and 3 bytes
+ */
+void encode_block(char* dest, const char* src) {
     int i = 0;
-    char c = 'A';
+    char clear[3] = {0};
+    char *ptr = clear;
+    strncpy(clear, src, 3);
 
-    while(c <= 'Z') alpha[i++] = c++;
-    c = 'a';
-    while(c <= 'z') alpha[i++] = c++;
-    c = '0';
-    while(c <= '9') alpha[i++] = c++;
-    alpha[i++] = '+';
-    alpha[i++] = '/';
+    dest[i++] = base64_alphabet[(*ptr & 0xf6) >> 2];
 
-    return alpha;
+    char c = (*ptr & 0x03) << 4;
+    ptr++;
+    c |= (*ptr & 0xf0) >> 4;
+    dest[i++] = base64_alphabet[c];
+
+    if (strlen(src) == 1) {
+        dest[i++] = '=';
+        dest[i++] = '=';
+        return;
+    }
+
+    c = (*ptr & 0x0f) << 2;
+    ++ptr;
+    c |= (*ptr & 0xc0) >> 6;
+    dest[i++] = base64_alphabet[c];
+
+    dest[i++] = *ptr ? base64_alphabet[*ptr & 0x3f] : '=';
+    ++ptr;
 }
 
+
 const char* encode(const char* src) {
-    const char* alphabet = _make_base64_alphabet();
-    int length = strlen(src) * 8 / 6;
-    int padding = strlen(src)%3;
-    char* clear = (char*)calloc(length+padding, 1);
-    strcpy(clear, src); 
-    char* encoded = (char*)calloc(length+padding+1, 1);
+    int blocks = strlen(src)/3 + 
+                 (strlen(src)%3 ? 1 : 0); 
+    char* encoded = (char*)calloc(blocks, 4);
+    char* encoded_ptr = encoded;
     int i = 0;
 
-    while (i < length+padding) {
-        encoded[i++] = alphabet[(*clear & 0xf6) >> 2];
-
-        char c = (*clear & 0x03) << 4;
-        clear++;
-        c |= (*clear & 0xf0) >> 4;
-        encoded[i++] = alphabet[c];
-
-
-        c = (*clear & 0x0f) << 2;
-        ++clear;
-        c |= (*clear & 0xc0) >> 6;
-        encoded[i++] = alphabet[c];
-
-        encoded[i++] = *clear ? alphabet[*clear & 0x3f] : '=';
-        ++clear;
+    while (i++ < blocks) {
+        encode_block(encoded_ptr, src);
+        src += 3;
+        encoded_ptr += 4;
     }
 
     return encoded;
