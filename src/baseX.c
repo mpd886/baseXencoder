@@ -82,25 +82,30 @@ static int get_idx(char c) {
 }
 
 
-const char* b64decode(const char* src, int lenth) {
-    char* decoded = (char*)calloc(3, 1);
+const char* b64decode(const char* src, int length) {
+    int blocks = length/4;
+    char* decoded = (char*)calloc((blocks*3)+1, 1);
 
+    int i = 0;
+    int decode_idx = 0;
     char mask = 0x3f;
-    int idx = get_idx(src[0]);
-    char c = (idx & mask) << 2;
+    while (i < length) {
+        int idx = get_idx(src[i++]);
+        char c = (idx & mask) << 2;
 
-    idx = get_idx(src[1]);
-    decoded[0] = c  | (idx & mask) >> 4;
+        idx = get_idx(src[i++]);
+        decoded[decode_idx++] = c  | (idx & mask) >> 4;
 
-    c = (idx & mask) << 4;
+        c = (idx & mask) << 4;
 
-    idx = get_idx(src[2]) & mask;
-    c |= idx >> 2;
-    decoded[1] = c;
+        idx = get_idx(src[i++]) & mask;
+        c |= idx >> 2;
+        decoded[decode_idx++] = c;
 
-    c = (idx & 0x03) << 6;
-    idx = get_idx(src[3]) & mask;
-    c |= idx;
-    decoded[2] = c;
+        c = (idx & 0x03) << 6;
+        idx = get_idx(src[i++]) & mask;
+        c |= idx;
+        decoded[decode_idx++] = c;
+    }
     return decoded;
 }

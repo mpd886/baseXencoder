@@ -93,6 +93,14 @@ void base64_decodeNoPadding() {
 }
 
 
+void base64_decodeTwoBlocks() {
+    const char* expected = "abcdef"; 
+    const char* result = b64decode("YWJjZGVm", 8);
+    assertStringEquals(expected, result);
+}
+
+
+
 int main() {
     int i;
     Test tests[] = {
@@ -102,7 +110,8 @@ int main() {
         TEST(base64_encodeTwoPaddingBytes),
         TEST(base64_encodeAlphabet),
         TEST(base64_encodeRandomBytes),
-        TEST(base64_decodeNoPadding)
+        TEST(base64_decodeNoPadding),
+        TEST(base64_decodeTwoBlocks)
     };
 
     const int total_tests = sizeof(tests)/sizeof(tests[0]);
