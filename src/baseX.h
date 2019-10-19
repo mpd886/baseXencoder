@@ -4,7 +4,7 @@
 
 
 
-const char* encode(const char* src);
+const char* encode(const char* src, int length);
 
 #endif
 

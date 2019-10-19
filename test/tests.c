@@ -2,6 +2,9 @@
 #include <assert.h>
 #include "baseX.h"
 
+#define RANDOM_BYTES_TEST_FILE "random-bytes"
+#define TOTAL_RANDOM_BYTES 72
+
 typedef void (*test_func)();
 
 #define TEST(x) { #x, x }
@@ -31,35 +34,54 @@ void assertStringEquals(const char* expected, const char* result) {
 
 void base64_encodeNoPadding() {
     const char* expected = "YWJj";
-    const char* result = encode("abc"); 
+    const char* result = encode("abc", 3); 
     assertStringEquals(expected, result);
 }
 
 
 void base64_moreBytes() {
     const char* expected = "YWJjZGVm";
-    const char* result = encode("abcdef");
+    const char* result = encode("abcdef", 6);
     assertStringEquals(expected, result);
 }
 
 
 void base64_onePaddingByte() {
     const char* expected = "YWJjZGU=";
-    const char* result = encode("abcde");
+    const char* result = encode("abcde", 5);
     assertStringEquals(expected, result);
 }
 
 
 void base64_twoPaddingByte() {
     const char* expected = "YWJjZA==";
-    const char* result = encode("abcd");
+    const char* result = encode("abcd", 4);
     assertStringEquals(expected, result);
 }
 
 
 void base64_encodeAlphabet() {
     const char* expected = "YWJjZGVmZ2hpamtsbW5vcHFyc3R1dnd4eXo=";
-    const char* result = encode("abcdefghijklmnopqrstuvwxyz");
+    const char* result = encode("abcdefghijklmnopqrstuvwxyz", 26);
+    assertStringEquals(expected, result);
+}
+
+
+void base64_encodeRandomBytes() {
+    const char* expected = "zZKA1tUgPOn1LEx0QmZ2EhEIYYDPRqcR9H4SdPxPpsbivWUB1czwdJZDrGt9XDlYzQ4LAkU0RfPNvh6MMRR4RyCgrmBcwBIA";
+    char input[TOTAL_RANDOM_BYTES] = {0};
+
+    FILE* fp = fopen(RANDOM_BYTES_TEST_FILE, "rb");
+    if (!fp) {
+        perror(RANDOM_BYTES_TEST_FILE);
+        fclose(fp);
+        return;
+    }
+    fread(input, 1, TOTAL_RANDOM_BYTES, fp);
+    fclose(fp);
+
+    const char* result = encode(input, TOTAL_RANDOM_BYTES);
+
     assertStringEquals(expected, result);
 }
 
@@ -71,7 +93,8 @@ int main() {
         TEST(base64_moreBytes),
         TEST(base64_onePaddingByte),
         TEST(base64_twoPaddingByte),
-        TEST(base64_encodeAlphabet)
+        TEST(base64_encodeAlphabet),
+        TEST(base64_encodeRandomBytes)
     };
 
     const int total_tests = sizeof(tests)/sizeof(tests[0]);
