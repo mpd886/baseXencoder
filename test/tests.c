@@ -39,21 +39,21 @@ void base64_encodeNoPadding() {
 }
 
 
-void base64_moreBytes() {
+void base64_encodeTwoBlocks() {
     const char* expected = "YWJjZGVm";
     const char* result = b64encode("abcdef", 6);
     assertStringEquals(expected, result);
 }
 
 
-void base64_onePaddingByte() {
+void base64_encodeOnePaddingByte() {
     const char* expected = "YWJjZGU=";
     const char* result = b64encode("abcde", 5);
     assertStringEquals(expected, result);
 }
 
 
-void base64_twoPaddingByte() {
+void base64_encodeTwoPaddingBytes() {
     const char* expected = "YWJjZA==";
     const char* result = b64encode("abcd", 4);
     assertStringEquals(expected, result);
@@ -97,9 +97,9 @@ int main() {
     int i;
     Test tests[] = {
         TEST(base64_encodeNoPadding),
-        TEST(base64_moreBytes),
-        TEST(base64_onePaddingByte),
-        TEST(base64_twoPaddingByte),
+        TEST(base64_encodeTwoBlocks),
+        TEST(base64_encodeOnePaddingByte),
+        TEST(base64_encodeTwoPaddingBytes),
         TEST(base64_encodeAlphabet),
         TEST(base64_encodeRandomBytes),
         TEST(base64_decodeNoPadding)
