@@ -57,13 +57,21 @@ void base64_twoPaddingByte() {
 }
 
 
+void base64_encodeAlphabet() {
+    const char* expected = "YWJjZGVmZ2hpamtsbW5vcHFyc3R1dnd4eXo=";
+    const char* result = encode("abcdefghijklmnopqrstuvwxyz");
+    assertStringEquals(expected, result);
+}
+
+
 int main() {
     int i;
     Test tests[] = {
         TEST(base64_encodeNoPadding),
         TEST(base64_moreBytes),
         TEST(base64_onePaddingByte),
-        TEST(base64_twoPaddingByte)
+        TEST(base64_twoPaddingByte),
+        TEST(base64_encodeAlphabet)
     };
 
     const int total_tests = sizeof(tests)/sizeof(tests[0]);

@@ -23,7 +23,7 @@ void encode_block(char* dest, const char* src) {
     char *ptr = clear;
     strncpy(clear, src, 3);
 
-    dest[i++] = base64_alphabet[(*ptr & 0xf6) >> 2];
+    dest[i++] = base64_alphabet[(*ptr & 0xfc) >> 2];
 
     char c = (*ptr & 0x03) << 4;
     ptr++;
