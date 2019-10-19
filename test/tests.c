@@ -34,35 +34,35 @@ void assertStringEquals(const char* expected, const char* result) {
 
 void base64_encodeNoPadding() {
     const char* expected = "YWJj";
-    const char* result = encode("abc", 3); 
+    const char* result = b64encode("abc", 3); 
     assertStringEquals(expected, result);
 }
 
 
 void base64_moreBytes() {
     const char* expected = "YWJjZGVm";
-    const char* result = encode("abcdef", 6);
+    const char* result = b64encode("abcdef", 6);
     assertStringEquals(expected, result);
 }
 
 
 void base64_onePaddingByte() {
     const char* expected = "YWJjZGU=";
-    const char* result = encode("abcde", 5);
+    const char* result = b64encode("abcde", 5);
     assertStringEquals(expected, result);
 }
 
 
 void base64_twoPaddingByte() {
     const char* expected = "YWJjZA==";
-    const char* result = encode("abcd", 4);
+    const char* result = b64encode("abcd", 4);
     assertStringEquals(expected, result);
 }
 
 
 void base64_encodeAlphabet() {
     const char* expected = "YWJjZGVmZ2hpamtsbW5vcHFyc3R1dnd4eXo=";
-    const char* result = encode("abcdefghijklmnopqrstuvwxyz", 26);
+    const char* result = b64encode("abcdefghijklmnopqrstuvwxyz", 26);
     assertStringEquals(expected, result);
 }
 
@@ -80,8 +80,15 @@ void base64_encodeRandomBytes() {
     fread(input, 1, TOTAL_RANDOM_BYTES, fp);
     fclose(fp);
 
-    const char* result = encode(input, TOTAL_RANDOM_BYTES);
+    const char* result = b64encode(input, TOTAL_RANDOM_BYTES);
 
+    assertStringEquals(expected, result);
+}
+
+
+void base64_decodeNoPadding() {
+    const char* expected = "abc"; 
+    const char* result = b64decode("YWJj", 4); 
     assertStringEquals(expected, result);
 }
 
@@ -94,7 +101,8 @@ int main() {
         TEST(base64_onePaddingByte),
         TEST(base64_twoPaddingByte),
         TEST(base64_encodeAlphabet),
-        TEST(base64_encodeRandomBytes)
+        TEST(base64_encodeRandomBytes),
+        TEST(base64_decodeNoPadding)
     };
 
     const int total_tests = sizeof(tests)/sizeof(tests[0]);

@@ -13,6 +13,7 @@ static const char base64_alphabet[] = { 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H',
                                         'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 
                                         'w', 'x', 'y', 'z', '0', '1', '2', '3', 
                                         '4', '5', '6', '7', '8', '9', '+', '/' };
+#define B64_ALPHABET_LENGTH 64
                                         
 
 /*
@@ -50,7 +51,7 @@ void encode_block(char* dest, const char* src, int octets) {
 }
 
 
-const char* encode(const char* src, int length) {
+const char* b64encode(const char* src, int length) {
     int blocks = length/3 + 
                  (length%3 ? 1 : 0); 
     char* encoded = (char*)calloc(blocks, 4);
@@ -68,3 +69,38 @@ const char* encode(const char* src, int length) {
     return encoded;
 }
 
+
+
+static int get_idx(char c) {
+    int i;
+    for (i = 0 ; i < B64_ALPHABET_LENGTH ; ++i) {
+        if (base64_alphabet[i] == c) {
+            return i;
+        }
+    }
+    return -i;
+}
+
+
+const char* b64decode(const char* src, int lenth) {
+    char* decoded = (char*)calloc(3, 1);
+
+    char mask = 0x3f;
+    int idx = get_idx(src[0]);
+    char c = (idx & mask) << 2;
+
+    idx = get_idx(src[1]);
+    decoded[0] = c  | (idx & mask) >> 4;
+
+    c = (idx & mask) << 4;
+
+    idx = get_idx(src[2]) & mask;
+    c |= idx >> 2;
+    decoded[1] = c;
+
+    c = (idx & 0x03) << 6;
+    idx = get_idx(src[3]) & mask;
+    c |= idx;
+    decoded[2] = c;
+    return decoded;
+}
